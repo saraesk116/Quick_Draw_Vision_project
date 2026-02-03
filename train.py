@@ -48,6 +48,10 @@ def train(net, optimizer, train_loader, val_loader, exp_name, device, epochs=10)
             os.makedirs('weights')
         if val_loss[-1] >= max(val_loss):
             torch.save(net.state_dict(), f'weights/{exp_name}_epoch{epoch+1}.pth')
+            # remove older weights
+            for f in os.listdir('weights'):
+                if f.startswith(exp_name) and f != f'{exp_name}_epoch{epoch+1}.pth':
+                    os.remove(os.path.join('weights', f))
             print(f'Saved model weights at epoch {epoch+1} with validation accuracy {val_accuracy:.4f}')
         
     return running_loss, val_loss
