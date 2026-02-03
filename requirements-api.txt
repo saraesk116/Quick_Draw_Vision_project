@@ -1,0 +1,11 @@
+torch==2.8.0
+torchvision==0.23.0
+tensorboard==2.14.0
+pandas==2.3.3
+numpy==2.2.6
+tqdm==4.66.1
+scikit-learn==1.7.2
+fastapi<1.0 
+uvicorn==0.23.2
+gdown==5.2.1
+python-multipart 

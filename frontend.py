@@ -39,7 +39,7 @@ def predict_drawing(image):
 
     # TODO: Define your API URL
     # Since we are running locally, it should look like [http://127.0.0.1:8000/predict](http://127.0.0.1:8000/predict)
-    api_url = "http://127.0.0.1:8000/predict"
+    api_url = "http://api:5075/predict"
 
     # TODO: Send the POST request
     # Use requests.post()

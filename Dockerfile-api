@@ -1,0 +1,26 @@
+# Use an official Python runtime
+FROM python:3.10-slim
+
+# Set work directory
+WORKDIR /app
+
+# --- THE MAGIC PART ---
+# 1. Copy ONLY the requirements first
+COPY requirements-api.txt .
+
+# 2. Install dependencies (including gdown for model weights)
+# Since requirements-api.txt hasn't changed, Docker will use the CACHE for this layer!
+RUN pip install --no-cache-dir -r requirements-api.txt 
+
+# 3. Download model weights
+# Replace YOUR_GOOGLE_DRIVE_FILE_ID with your actual file ID
+RUN gdown --id 18mcfjv9JlLD-mdgHX6yQQenS023rR5hE -O weights.pth
+
+# 4. Copy the rest of the code
+# This layer will be rebuilt, but it's super fast (just copying files)
+COPY *.py /app
+# ----------------------
+
+EXPOSE 5075
+
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "5075"]

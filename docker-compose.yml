@@ -1,0 +1,21 @@
+
+
+services:
+  # --- Musician 1: The Brain (API) ---
+  api: 
+    build: 
+      context: .
+      dockerfile: Dockerfile-api
+    ports:
+      - "5075:5075"  # Opens a window so we can hear it (Host Port : Container Port)
+
+  # --- Musician 2: The Face (Frontend) ---
+  gradio-app:
+    build: 
+      context: .
+      dockerfile: Dockerfile-frontend
+    ports:
+      - "7860:7860" # Opens the port for the web interface
+    depends_on:
+      - api  # Tells Docker: "Don't start the Frontend until the API is running"
+    
