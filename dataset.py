@@ -7,7 +7,7 @@ from typing import Iterable, List, Sequence, Tuple
 
 import numpy as np
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 
 
 @dataclass(frozen=True)
@@ -103,3 +103,27 @@ def build_default_class_files(data_dir: str | Path = "data") -> List[QuickDrawCl
         ("full_numpy_bitmap_donut.npy", 9),
     ]
     return [QuickDrawClassFile(path=str(data_dir / fname), label=label) for fname, label in names]
+
+def get_QuickDraw_dataloaders(
+    batch_size: int = 64,
+    limit_per_class: int | None = None,
+    num_workers: int = 2 ,
+) -> Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, torch.utils.data.DataLoader]:
+    class_files = build_default_class_files()
+    dataset = QuickDrawMemmapDataset(class_files, limit_per_class=limit_per_class)
+
+    # Split dataset into train (80%), val (10%), test (10%)
+    total_size = len(dataset)
+    train_size = int(0.8 * total_size)
+    val_size = int(0.1 * total_size)
+    test_size = total_size - train_size - val_size
+
+    train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(
+        dataset, [train_size, val_size, test_size]
+    )
+
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+
+    return train_loader, val_loader, test_loader
